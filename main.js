@@ -70,7 +70,7 @@ class Calculator {
   getDecimalPoint() {
     if (
       this.LastInputType() === "number" &&
-      this.LastInputVal().includes(".")
+      !this.LastInputVal().includes(".")
     ) {
       this.appendToLastInput(".");
     } else if (
