@@ -26,7 +26,11 @@ class Calculator {
     }
   }
 
-  percentToDecimal() {}
+  percentToDecimal() {
+    if (this.LastInputType() === "number") {
+      this.editLastInput(this.LastInputVal() / 100, "number");
+    }
+  }
 
   getNumber(value) {
     if (this.LastInputType() === "number") {
@@ -39,13 +43,71 @@ class Calculator {
     }
   }
 
-  getOperation(value) {}
+  getOperation(value) {
+    switch (this.LastInputType()) {
+      case "number":
+        this.addNewInput(value, "operator");
+        break;
+      case "operator":
+        this.editLastInput(value, "operator");
+        break;
+      case "equals":
+        let output = this.outputVal();
+        this.history();
+        this.addNewInput(output, "number");
+        this.addNewInput(value, "operator");
+        break;
+      default:
+        return;
+    }
+  }
+  negateNumber() {
+    if (this.LastInputType() === "number") {
+      this.editLastInput(parseFloat(this.LastInputVal()) * -1, "number");
+    }
+  }
 
-  negateNumber() {}
+  getDecimalPoint() {
+    if (
+      this.LastInputType() === "number" &&
+      this.LastInputVal().includes(".")
+    ) {
+      this.appendToLastInput(".");
+    } else if (
+      this.LastInputType() === "operator" ||
+      this.LastInputType() === null
+    ) {
+      this.addNewInput("0.", "number");
+    }
+  }
 
-  getDecimalPoint() {}
+  result() {
+    if (this.LastInputType() === "number") {
+      const self = this;
+      const simpleExp = function (currExp, operator) {
+        if (currExp.indexOf(operator) === -1) {
+          return currExp;
+        } else {
+          let opIdx = currExp.indexOf(operator);
+          let leftOperandIdx = opIdx - 1;
+          let rightOperandIdx = opIdx + 1;
 
-  result() {}
+          let partialSol = self.performOperation(
+            ...currExp.slice(leftOperandIdx, rightOperandIdx + 1)
+          );
+
+          currExp.splice(leftOperandIdx, 3, partialSol.toString());
+
+          return simpleExp(currExp, operator);
+        }
+      };
+
+      let result = ["÷", "×", "−", "+"].reduce(simpleExp, this.getInputValue());
+
+      this.addNewInput("=", "equals");
+      this.updateOutput(result.toString());
+    }
+  }
 
   LastInputType() {
     return this.history.length === 0
@@ -93,6 +155,28 @@ class Calculator {
 
   updateOutput(value) {
     this.output.value = Number(value).toLocaleString();
+  }
+
+  performOperation(leftOperand, operation, rightOperand) {
+    leftOperand = parseFloat(leftOperand);
+    rightOperand = parseFloat(rightOperand);
+
+    if (Number.isNaN(leftOperand) || Number.isNaN(rightOperand)) {
+      return;
+    }
+
+    switch (operation) {
+      case "−":
+        return leftOperand - rightOperand;
+      case "+":
+        return leftOperand + rightOperand;
+      case "×":
+        return leftOperand * rightOperand;
+      case "÷":
+        return leftOperand / rightOperand;
+      default:
+        return;
+    }
   }
 }
 
