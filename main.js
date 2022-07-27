@@ -102,7 +102,7 @@ class Calculator {
         }
       };
 
-      let result = ["÷", "×", "−", "+"].reduce(simpleExp, this.getInputValue());
+      let result = ["÷", "x", "-", "+"].reduce(simpleExp, this.getInputValue());
 
       this.addNewInput("=", "equals");
       this.updateOutput(result.toString());
@@ -166,11 +166,11 @@ class Calculator {
     }
 
     switch (operation) {
-      case "−":
+      case "-":
         return leftOperand - rightOperand;
       case "+":
         return leftOperand + rightOperand;
-      case "×":
+      case "x":
         return leftOperand * rightOperand;
       case "÷":
         return leftOperand / rightOperand;
