@@ -9,7 +9,22 @@ class Calculator {
     this.updateOutput("0");
   }
 
-  backspace() {}
+  backspace() {
+    switch (this.LastInputType()) {
+      case "number":
+        if (this.LastInputVal().length > 1) {
+          this.editLastInput(this.LastInputVal().slice(0, -1), "number");
+        } else {
+          this.deleteLastInput();
+        }
+        break;
+      case "operator":
+        this.deleteLastInput();
+        break;
+      default:
+        return;
+    }
+  }
 
   percentToDecimal() {}
 
@@ -20,7 +35,7 @@ class Calculator {
       this.LastInputType() === "operator" ||
       this.LastInputType() === null
     ) {
-      this.NewInput(value, "number");
+      this.addNewInput(value, "number");
     }
   }
 
@@ -32,8 +47,44 @@ class Calculator {
 
   result() {}
 
+  LastInputType() {
+    return this.history.length === 0
+      ? null
+      : this.history[this.history.length - 1].type;
+  }
+
+  LastInputVal() {
+    return this.history.length === 0
+      ? null
+      : this.history[this.history.length - 1].value;
+  }
+
   getInputValue() {
     return this.history.map((entry) => entry.value);
+  }
+
+  getOutputValue() {
+    return this.output.value.replace(/,/g, "");
+  }
+
+  editLastInput(value, type) {
+    this.history.pop();
+    this.addNewInput(value, type);
+  }
+
+  deleteLastInput() {
+    this.history.pop();
+    this.updateInput();
+  }
+
+  addNewInput(value, type) {
+    this.history.push({ type: type, value: value.toString() });
+    this.updateInput();
+  }
+
+  appendToLastInput(value) {
+    this.history[this.history.length - 1].value += value.toString();
+    this.updateInput();
   }
 
   updateInput() {
@@ -52,8 +103,8 @@ const output = document.querySelector("#result");
 const clearBtn = document.querySelector("[data-clear]");
 const backSpcBtn = document.querySelector("[data-backspace]");
 const percentBtn = document.querySelector("[data-percent]");
-const opBtn = document.querySelector("[data-operator]");
-const numBtn = document.querySelector("[data-number]");
+const opBtn = document.querySelectorAll("[data-operator]");
+const numBtn = document.querySelectorAll("[data-number]");
 const decimalBtn = document.querySelector("[data-decimal]");
 const equalsBtn = document.querySelector("[data-equals]");
 const negateBtn = document.querySelector("[data-negation]");
